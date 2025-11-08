@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>404 Overlay with Alarm</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<style>
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: #fafafa;
+    padding: 40px;
+    text-align: center;
+  }
+  a.trigger {
+    display:inline-block; padding:12px 20px;
+    background:#007bff; color:#fff; text-decoration:none;
+    border-radius:8px;
+  }
+  a.trigger:hover { background:#005dc1; }
+
+  .overlay {
+    position: fixed; inset:0;
+    background:#0b0b0b; color:#ff6666;
+    font-weight:bold; font-size:28px;
+    z-index:99999;
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+    align-content:start;
+    overflow:hidden;
+    animation:fadeIn .4s ease forwards;
+  }
+  @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+  .overlay span {
+    padding:12px; text-align:center;
+    animation:flicker 1.2s infinite alternate;
+  }
+  @keyframes flicker {
+    from{opacity:.4;transform:scale(1);}
+    to{opacity:1;transform:scale(1.05);}
+  }
+</style>
+</head>
+<body>
+
+<h1>Click the link below</h1>
+<p> <strong>Win $100 simply by clicking the button below!</strong>. .</p>
+<a href="#" class="trigger">Open Page</a>
+
+<!-- small alarm sound (free online beep) -->
+<audio id="alarm" preload="auto">
+  <source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" type="audio/ogg">
+  <source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+const link=document.querySelector(".trigger");
+link.addEventListener("click",e=>{
+  e.preventDefault();
+  const overlay=document.createElement("div");
+  overlay.className="overlay";
+
+  for(let i=0;i<80;i++){
+    const s=document.createElement("span");
+    s.textContent=(Math.random()>0.3)?"Critical system breach detected":"Resetting computer to factory deafults...";
+    overlay.appendChild(s);
+  }
+  document.body.appendChild(overlay);
+
+  const alarm=document.getElementById("alarm");
+  alarm.currentTime=0;
+  alarm.loop=true;
+  alarm.play().catch(()=>{});   // ignore autoplay block
+
+  const remove=()=>{
+    overlay.remove();
+    alarm.pause();
+  };
+
+  document.addEventListener("keydown",ev=>{
+    if(ev.key==="Escape") remove();
+  });
+
+  setTimeout(remove,10000);
+});
+</script>
+
+</body>
+</html>
